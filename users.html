@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games - Azure Bricks</title>
+    <title>Players - Azure Bricks</title>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="assets/Site/Logo2.png">
 </head>
 <body>
-    <!-- 2017 Style Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-left">
@@ -18,7 +17,7 @@
                     <img src="assets/Site/Logo.png" alt="Azure Bricks" class="logo-img">
                 </a>
                 <ul class="nav-links">
-                    <li><a href="games.html" class="active">Games</a></li>
+                    <li><a href="games.html">Games</a></li>
                     <li><a href="#">Catalog</a></li>
                     <li><a href="#">Develop</a></li>
                     <li><a href="forum.html">Forum</a></li>
@@ -32,36 +31,20 @@
             </div>
 
             <div class="nav-right" id="user-info">
-                <!-- Fallback if JS isn't loaded yet -->
                 <a href="login.html">Login</a>
                 <a href="login.html?mode=signup">Sign Up</a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="container">
-        
         <div class="games-layout">
-            
-            <div class="games-main">
-                <h3 style="margin-bottom: 10px; color: #333; font-weight: normal; font-size: 20px;">Recommended</h3>
-                
-                <div class="games-grid">
-                    <p style="color: #666; font-style: italic; padding: 20px 0; grid-column: 1 / -1; text-align: center;">Nenhum jogo disponível no momento.</p>
+            <div class="games-main" style="width: 100%;">
+                <h2 style="margin-bottom: 20px; color: var(--text-color);">All Players</h2>
+                <div id="users-container" style="display:flex; flex-direction:column; gap:10px;">
+                    <p style="color:var(--text-muted);">Loading players...</p>
                 </div>
             </div>
-
-            <!-- Right Sidebar for Ads -->
-            <div class="sidebar-right">
-                <div class="ad-placeholder">
-                    ADVERTISEMENT - Why am I seeing ads?
-                </div>
-                <div class="ad-placeholder" style="height: 250px;">
-                    ADVERTISEMENT - Report
-                </div>
-            </div>
-            
         </div>
     </main>
 

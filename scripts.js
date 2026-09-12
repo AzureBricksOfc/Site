@@ -1,27 +1,44 @@
-// scripts.js - Basic interactivity and authentication for Azure Bricks portal
+// scripts.js - Azure Bricks Portal (Firebase + Async)
 
-document.addEventListener('DOMContentLoaded', () => {
+const firebaseConfig = {
+  apiKey: "AIzaSyBBjAcSb0XBQjqbpqzeaiG8QtO7oft_su0",
+  authDomain: "azurebricks-447b0.firebaseapp.com",
+  projectId: "azurebricks-447b0",
+  storageBucket: "azurebricks-447b0.firebasestorage.app",
+  messagingSenderId: "858764169894",
+  appId: "1:858764169894:web:e72d6366e37fb998355a67",
+  measurementId: "G-VJ6C4J1WWJ"
+};
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const firestore = firebase.firestore();
+
+// Keep a local reference to the logged-in user
+let currentUser = localStorage.getItem('ab_currentUser');
+
+document.addEventListener('DOMContentLoaded', async () => {
     console.log("Azure Bricks Portal Loaded!");
     loadTheme();
-    checkAuth();
+    await checkAuth();
+    if(window.location.pathname.includes('forum.html')) renderForumHome();
+    if(window.location.pathname.includes('profile.html')) loadProfilePage();
+    if(window.location.pathname.includes('users.html')) loadUsersPage();
 });
 
-// ==========================================
 // THEME SYSTEM
-// ==========================================
-
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-theme');
     localStorage.setItem('azureBricksTheme', isDark ? 'dark' : 'light');
     updateThemeIcon();
 }
-
 function loadTheme() {
     if (localStorage.getItem('azureBricksTheme') === 'dark') {
         document.body.classList.add('dark-theme');
     }
 }
-
 function updateThemeIcon() {
     const icon = document.getElementById('theme-icon');
     if (icon) {
@@ -29,27 +46,7 @@ function updateThemeIcon() {
     }
 }
 
-// ==========================================
-// AUTHENTICATION SYSTEM (Using LocalStorage)
-// ==========================================
-
-function getDb() {
-    let db = localStorage.getItem('azureBricksDb');
-    if (db) {
-        db = JSON.parse(db);
-        if(!db.forumTopics) db.forumTopics = []; // Migration for older DBs
-        return db;
-    }
-    // Initialize DB if empty
-    const newDb = { users: {}, currentUser: null, forumTopics: [] };
-    localStorage.setItem('azureBricksDb', JSON.stringify(newDb));
-    return newDb;
-}
-
-function saveDb(db) {
-    localStorage.setItem('azureBricksDb', JSON.stringify(db));
-}
-
+// AUTHENTICATION
 function toggleAuthMode(mode) {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -68,48 +65,48 @@ function toggleAuthMode(mode) {
     }
 }
 
-function handleSignup(event) {
+async function handleSignup(event) {
     event.preventDefault();
     const username = document.getElementById('signup-username').value.trim();
     const password = document.getElementById('signup-password').value;
     
-    const db = getDb();
     const errorEl = document.getElementById('signup-error');
     const successEl = document.getElementById('signup-success');
     errorEl.style.display = 'none';
     successEl.style.display = 'none';
 
-    if (db.users[username]) {
+    const userDoc = await firestore.collection('users').doc(username).get();
+    if (userDoc.exists) {
         errorEl.textContent = 'Username already exists.';
         errorEl.style.display = 'block';
         return;
     }
 
-    db.users[username] = { 
+    await firestore.collection('users').doc(username).set({
         password: password,
         joinDate: new Date().toLocaleDateString(),
         avatar: 'assets/Site/Logo2.png',
-        bio: "This user hasn't written a bio yet."
-    };
-    saveDb(db);
+        bio: "This user hasn't written a bio yet.",
+        friends: []
+    });
+    
     successEl.style.display = 'block';
     document.getElementById('signup-username').value = '';
     document.getElementById('signup-password').value = '';
     setTimeout(() => toggleAuthMode('login'), 1500);
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
     
-    const db = getDb();
     const errorEl = document.getElementById('login-error');
     errorEl.style.display = 'none';
 
-    if (db.users[username] && db.users[username].password === password) {
-        db.currentUser = username;
-        saveDb(db);
+    const userDoc = await firestore.collection('users').doc(username).get();
+    if (userDoc.exists && userDoc.data().password === password) {
+        localStorage.setItem('ab_currentUser', username);
         window.location.href = 'index.html';
     } else {
         errorEl.textContent = 'Invalid username or password.';
@@ -118,35 +115,35 @@ function handleLogin(event) {
 }
 
 function handleLogout() {
-    const db = getDb();
-    db.currentUser = null;
-    saveDb(db);
+    localStorage.removeItem('ab_currentUser');
     window.location.href = 'index.html';
 }
 
-function checkAuth() {
-    const db = getDb();
+async function checkAuth() {
+    currentUser = localStorage.getItem('ab_currentUser');
     const userInfoDiv = document.getElementById('user-info');
-    
     const isDark = document.body.classList.contains('dark-theme');
     const themeIconStr = isDark ? '☀️' : '🌙';
     const themeBtnHtml = `<span id="theme-icon" class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">${themeIconStr}</span>`;
 
-    if (db.currentUser) {
-        let userProfile = db.users[db.currentUser] || {};
+    if (currentUser) {
+        const userDoc = await firestore.collection('users').doc(currentUser).get();
+        const userProfile = userDoc.data() || {};
         let avatarUrl = userProfile.avatar || 'assets/Site/Logo2.png';
+        
         if (userInfoDiv) {
             userInfoDiv.innerHTML = `
                 ${themeBtnHtml}
-                <a href="profile.html?user=${encodeURIComponent(db.currentUser)}" style="text-decoration:none; color:inherit; display:inline-flex; align-items:center;">
+                <a href="users.html">Players</a>
+                <a href="profile.html?user=${encodeURIComponent(currentUser)}" style="text-decoration:none; color:inherit; display:inline-flex; align-items:center;">
                     <img id="nav-avatar" src="${avatarUrl}" alt="Avatar" style="width:24px; height:24px; border-radius:50%; margin-right:6px; object-fit:cover; border:1px solid rgba(255,255,255,0.6);">
-                    <span style="font-weight:500;">${db.currentUser}</span>
+                    <span style="font-weight:500;">${currentUser}</span>
                 </a>
                 <button onclick="handleLogout()" style="background:none; border:1px solid rgba(255,255,255,0.5); color:white; padding:4px 8px; border-radius:3px; cursor:pointer; margin-left:10px;">Logout</button>
             `;
         }
         const profileName = document.querySelector('.profile-section h2');
-        if (profileName) profileName.textContent = `Hello, ${db.currentUser}!`;
+        if (profileName) profileName.textContent = `Hello, ${currentUser}!`;
         
         const profileAvatar = document.querySelector('.profile-section img');
         if (profileAvatar) profileAvatar.src = avatarUrl;
@@ -157,12 +154,13 @@ function checkAuth() {
         const profileBtn = document.querySelector('.profile-section .btn-primary');
         if (profileBtn) {
             profileBtn.textContent = "View Profile";
-            profileBtn.onclick = () => window.location.href = `profile.html?user=${encodeURIComponent(db.currentUser)}`;
+            profileBtn.onclick = () => window.location.href = `profile.html?user=${encodeURIComponent(currentUser)}`;
         }
     } else {
         if (userInfoDiv) {
             userInfoDiv.innerHTML = `
                 ${themeBtnHtml}
+                <a href="users.html">Players</a>
                 <a href="login.html">Login</a>
                 <a href="login.html?mode=signup">Sign Up</a>
             `;
@@ -178,50 +176,42 @@ function checkAuth() {
     }
 }
 
-// ==========================================
-// GAME LAUNCHER (Simulated)
-// ==========================================
+// GAME LAUNCHER
 function launchGame(gameName) {
-    const db = getDb();
-    if (!db.currentUser) {
+    if (!currentUser) {
         alert("You must be logged in to play games!");
         window.location.href = "login.html";
         return;
     }
-    // ... [Overlay simulation logic omitted for brevity in this snippet, using basic alert for now]
-    alert(`Launching ${gameName} for ${db.currentUser}... (Simulated)`);
+    alert(`Launching ${gameName} for ${currentUser}... (Simulated)`);
 }
 
-// ==========================================
 // FORUM SYSTEM
-// ==========================================
-
-function renderForumHome() {
+async function renderForumHome() {
     const container = document.getElementById('forum-container');
     if (!container) return;
-    const db = getDb();
 
     let html = `
         <div class="forum-header">
             <h3>General Discussion</h3>
-            ${db.currentUser ? `<button class="action-btn" onclick="showCreateTopic()">Create Topic</button>` : `<span style="font-size:12px;">Login to post</span>`}
+            ${currentUser ? `<button class="action-btn" onclick="showCreateTopic()">Create Topic</button>` : `<span style="font-size:12px;">Login to post</span>`}
         </div>
         <div class="forum-list">
     `;
 
-    if (db.forumTopics.length === 0) {
+    const snapshot = await firestore.collection('forum').orderBy('date', 'desc').get();
+    if (snapshot.empty) {
         html += `<div class="forum-row"><p style="color:var(--text-muted); text-align:center; width:100%;">No topics yet. Be the first to post!</p></div>`;
     } else {
-        // Reverse array to show newest first
-        [...db.forumTopics].reverse().forEach((topic, revIndex) => {
-            const actualIndex = db.forumTopics.length - 1 - revIndex;
+        snapshot.forEach(doc => {
+            const topic = doc.data();
             html += `
             <div class="forum-row">
                 <div>
-                    <a onclick="viewTopic(${actualIndex})" class="forum-title">${escapeHtml(topic.title)}</a>
+                    <a onclick="viewTopic('${doc.id}')" class="forum-title" style="cursor:pointer; color:var(--primary-color);">${escapeHtml(topic.title)}</a>
                     <div class="forum-author">By ${topic.author} - ${new Date(topic.date).toLocaleDateString()}</div>
                 </div>
-                <div class="forum-replies">${topic.replies.length} Replies</div>
+                <div class="forum-replies">${topic.replies ? topic.replies.length : 0} Replies</div>
             </div>`;
         });
     }
@@ -243,40 +233,37 @@ function showCreateTopic() {
     `;
 }
 
-function submitTopic() {
+async function submitTopic() {
     const title = document.getElementById('new-topic-title').value.trim();
     const content = document.getElementById('new-topic-content').value.trim();
-    const db = getDb();
 
-    if (!db.currentUser) return alert("Must be logged in.");
+    if (!currentUser) return alert("Must be logged in.");
     if (!title || !content) return alert("Please fill in all fields.");
 
-    db.forumTopics.push({
+    await firestore.collection('forum').add({
         title: title,
         content: content,
-        author: db.currentUser,
+        author: currentUser,
         date: new Date().toISOString(),
         replies: []
     });
 
-    saveDb(db);
     renderForumHome();
 }
 
-function viewTopic(index) {
-    const db = getDb();
-    const topic = db.forumTopics[index];
-    if(!topic) return;
+async function viewTopic(topicId) {
+    const docRef = firestore.collection('forum').doc(topicId);
+    const docSnap = await docRef.get();
+    if(!docSnap.exists) return;
+    const topic = docSnap.data();
     const container = document.getElementById('forum-container');
 
     let html = `
         <button class="action-btn" style="margin-bottom: 15px; background: #666;" onclick="renderForumHome()">← Back to Forum</button>
         <h2 style="margin-bottom: 10px;">${escapeHtml(topic.title)}</h2>
         
-        <!-- Original Post -->
         <div class="post-card">
             <div class="post-user">
-                <div class="post-user-avatar"></div>
                 <strong>${topic.author}</strong>
             </div>
             <div class="post-content">
@@ -286,28 +273,27 @@ function viewTopic(index) {
         </div>
     `;
 
-    // Replies
-    topic.replies.forEach(reply => {
-        html += `
-        <div class="post-card">
-            <div class="post-user">
-                <div class="post-user-avatar"></div>
-                <strong>${reply.author}</strong>
-            </div>
-            <div class="post-content">
-                <div class="post-date">Reply on ${new Date(reply.date).toLocaleString()}</div>
-                ${escapeHtml(reply.content)}
-            </div>
-        </div>`;
-    });
+    if(topic.replies) {
+        topic.replies.forEach(reply => {
+            html += `
+            <div class="post-card">
+                <div class="post-user">
+                    <strong>${reply.author}</strong>
+                </div>
+                <div class="post-content">
+                    <div class="post-date">Reply on ${new Date(reply.date).toLocaleString()}</div>
+                    ${escapeHtml(reply.content)}
+                </div>
+            </div>`;
+        });
+    }
 
-    // Reply Form
-    if (db.currentUser) {
+    if (currentUser) {
         html += `
             <div class="form-area">
                 <h4>Leave a Reply</h4>
                 <textarea id="reply-content" placeholder="Type your reply..." rows="4"></textarea>
-                <button class="action-btn" onclick="submitReply(${index})">Post Reply</button>
+                <button class="action-btn" onclick="submitReply('${topicId}')">Post Reply</button>
             </div>
         `;
     } else {
@@ -317,26 +303,27 @@ function viewTopic(index) {
     container.innerHTML = html;
 }
 
-function submitReply(topicIndex) {
+async function submitReply(topicId) {
     const content = document.getElementById('reply-content').value.trim();
-    const db = getDb();
-
-    if (!db.currentUser) return alert("Must be logged in.");
+    if (!currentUser) return alert("Must be logged in.");
     if (!content) return alert("Reply cannot be empty.");
 
-    db.forumTopics[topicIndex].replies.push({
+    const docRef = firestore.collection('forum').doc(topicId);
+    const docSnap = await docRef.get();
+    const topic = docSnap.data();
+    const replies = topic.replies || [];
+    replies.push({
         content: content,
-        author: db.currentUser,
+        author: currentUser,
         date: new Date().toISOString()
     });
 
-    saveDb(db);
-    viewTopic(topicIndex);
+    await docRef.update({ replies: replies });
+    viewTopic(topicId);
 }
 
-// Utility to prevent XSS in simple forum
 function escapeHtml(unsafe) {
-    return unsafe
+    return (unsafe||"")
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")
          .replace(/>/g, "&gt;")
@@ -344,32 +331,44 @@ function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
-// ==========================================
 // PROFILE SYSTEM
-// ==========================================
-
-function loadProfilePage() {
+async function loadProfilePage() {
     const params = new URLSearchParams(window.location.search);
     const username = params.get('user');
-    if (!username) {
-        document.querySelector('.profile-page-container').innerHTML = '<h2>User not found.</h2>';
+    const container = document.querySelector('.profile-page-container');
+    if (!username || !container) {
+        if(container) container.innerHTML = '<h2>User not found.</h2>';
         return;
     }
 
-    const db = getDb();
-    const userProfile = db.users[username];
-    if (!userProfile) {
-        document.querySelector('.profile-page-container').innerHTML = '<h2>User not found.</h2>';
+    const userDoc = await firestore.collection('users').doc(username).get();
+    if (!userDoc.exists) {
+        container.innerHTML = '<h2>User not found.</h2>';
         return;
     }
+    const userProfile = userDoc.data();
 
     document.getElementById('profile-username').textContent = username;
     document.getElementById('profile-joindate').textContent = userProfile.joinDate || 'Unknown';
     document.getElementById('profile-bio').textContent = userProfile.bio || "This user hasn't written a bio yet.";
     document.getElementById('profile-avatar').src = userProfile.avatar || 'assets/Site/Logo2.png';
 
-    if (db.currentUser === username) {
+    if (currentUser === username) {
         document.getElementById('edit-mode-btn').style.display = 'block';
+        if(document.getElementById('add-friend-btn')) document.getElementById('add-friend-btn').style.display = 'none';
+    } else {
+        document.getElementById('edit-mode-btn').style.display = 'none';
+        if(currentUser && document.getElementById('add-friend-btn')) document.getElementById('add-friend-btn').style.display = 'block';
+    }
+
+    // Load friends
+    const friendsList = document.getElementById('friends-list');
+    if(friendsList) {
+        if(!userProfile.friends || userProfile.friends.length === 0) {
+            friendsList.innerHTML = '<p style="margin:0; font-size:0.9em; color:var(--text-muted);">No friends yet.</p>';
+        } else {
+            friendsList.innerHTML = userProfile.friends.map(f => `<a href="profile.html?user=${f}" style="display:inline-block; margin-right:10px; padding: 5px 10px; background:var(--primary-color); color:white; border-radius: 20px; text-decoration:none; font-weight:bold; font-size:0.9em;">${f}</a>`).join('');
+        }
     }
 }
 
@@ -378,30 +377,80 @@ function toggleEditMode(show) {
     document.getElementById('profile-bio-container').style.display = show ? 'none' : 'block';
     document.getElementById('edit-mode-btn').style.display = show ? 'none' : 'block';
     
-    if (show) {
-        const db = getDb();
-        const userProfile = db.users[db.currentUser];
-        document.getElementById('edit-avatar').value = userProfile.avatar || '';
-        document.getElementById('edit-bio').value = userProfile.bio || '';
+    if (show && currentUser) {
+        firestore.collection('users').doc(currentUser).get().then(doc => {
+            const userProfile = doc.data();
+            document.getElementById('edit-avatar').value = userProfile.avatar || '';
+            document.getElementById('edit-bio').value = userProfile.bio || '';
+        });
     }
 }
 
-function saveProfileChanges() {
-    const db = getDb();
-    const userProfile = db.users[db.currentUser];
-    if (!userProfile) return;
-
+async function saveProfileChanges() {
+    if(!currentUser) return;
     const newAvatar = document.getElementById('edit-avatar').value.trim();
     const newBio = document.getElementById('edit-bio').value.trim();
 
-    userProfile.avatar = newAvatar || 'assets/Site/Logo2.png';
-    userProfile.bio = newBio || "This user hasn't written a bio yet.";
+    await firestore.collection('users').doc(currentUser).update({
+        avatar: newAvatar || 'assets/Site/Logo2.png',
+        bio: newBio || "This user hasn't written a bio yet."
+    });
     
-    saveDb(db);
-    
-    document.getElementById('profile-avatar').src = userProfile.avatar;
-    document.getElementById('profile-bio').textContent = userProfile.bio;
-    
+    loadProfilePage();
     toggleEditMode(false);
     checkAuth();
+}
+
+async function addFriend() {
+    if(!currentUser) return alert("Must be logged in to add friends!");
+    const params = new URLSearchParams(window.location.search);
+    const targetUser = params.get('user');
+    if(!targetUser || targetUser === currentUser) return;
+
+    const myDocRef = firestore.collection('users').doc(currentUser);
+    const myDoc = await myDocRef.get();
+    let myFriends = myDoc.data().friends || [];
+    
+    if(!myFriends.includes(targetUser)) {
+        myFriends.push(targetUser);
+        await myDocRef.update({ friends: myFriends });
+        alert(`You added ${targetUser} as a friend!`);
+        
+        // Add reciprocal
+        const targetDocRef = firestore.collection('users').doc(targetUser);
+        const targetDoc = await targetDocRef.get();
+        if (targetDoc.exists) {
+            let targetFriends = targetDoc.data().friends || [];
+            if(!targetFriends.includes(currentUser)) {
+                targetFriends.push(currentUser);
+                await targetDocRef.update({ friends: targetFriends });
+            }
+        }
+        loadProfilePage();
+    } else {
+        alert("You are already friends!");
+    }
+}
+
+// USERS LIST SYSTEM
+async function loadUsersPage() {
+    const container = document.getElementById('users-container');
+    if(!container) return;
+    
+    container.innerHTML = '<p>Loading players...</p>';
+    const snapshot = await firestore.collection('users').get();
+    let html = '';
+    snapshot.forEach(doc => {
+        const u = doc.data();
+        html += `
+        <div class="post-card" style="display:flex; align-items:center; gap:15px; margin-bottom:15px; cursor:pointer;" onclick="window.location.href='profile.html?user=${doc.id}'">
+            <img src="${u.avatar || 'assets/Site/Logo2.png'}" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-color);">
+            <div>
+                <h3 style="margin:0;"><a href="profile.html?user=${doc.id}" style="color:var(--text-color); text-decoration:none;">${doc.id}</a></h3>
+                <p style="color:var(--text-muted); font-size:14px; margin-top:5px; margin-bottom:0;">Joined: ${u.joinDate || 'Unknown'}</p>
+            </div>
+        </div>
+        `;
+    });
+    container.innerHTML = html;
 }

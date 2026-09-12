@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Bricks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="Imagens%20Do%20jogo/Site/Logo2.png">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="hamburger">☰</div>
+                <a href="index.html">
+                    <img src="Imagens%20Do%20jogo/Site/Logo.png" alt="Azure Bricks" class="logo-img">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="games.html">Games</a></li>
+                    <li><a href="#">Catalog</a></li>
+                    <li><a href="#">Develop</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-middle">
+                <div class="search-container">
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+
+            <div class="nav-right" id="user-info">
+                <a href="login.html">Login</a>
+                <a href="login.html?mode=signup">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sub Navigation (Removed for now) -->
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="home-layout">
+            
+            <!-- Left Column: User Profile -->
+            <aside class="profile-section">
+                <h2>Hello, Player1!</h2>
+                <div class="avatar-container" style="display:flex; justify-content:center; align-items:center; padding:10px;">
+                    <img src="Imagens%20Do%20jogo/Site/Logo2.png" alt="Avatar" style="width:120px; height:120px; object-fit:cover; border-radius:10px; border:2px solid #0055b3; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+                </div>
+                <p class="status">"Building my first game!"</p>
+                <button class="btn btn-primary">Edit Character</button>
+            </aside>
+
+            <!-- Right Column: Feed and News -->
+            <section class="feed-section">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>News</h3>
+                    </div>
+                    <div class="panel-content">
+                        <div class="news-item">
+                            <h4>Welcome to Azure Bricks!</h4>
+                            <p class="date">September 11, 2026</p>
+                            <p>We are excited to launch the new portal. Start building, playing, and exploring today.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel mt-20">
+                    <div class="panel-header">
+                        <h3>Friend Activity</h3>
+                    </div>
+                    <div class="panel-content empty-state">
+                        <p>No new activity from your friends.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Azure Bricks Corporation. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

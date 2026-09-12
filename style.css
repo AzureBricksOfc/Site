@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap');
+
+/* Azure Bricks - 2017 Style Base */
+:root {
+    --primary-blue: #0074BD; /* 2017 Roblox Blue */
+    --bg-main: #F2F4F5;
+    --text-main: #393b3d;
+    --text-muted: #B8B8B8;
+    --border-color: #c3c3c3;
+    --card-bg: #ffffff;
+    --link-color: #0074BD;
+}
+
+body.dark-theme {
+    --primary-blue: #232527; 
+    --bg-main: #111214;
+    --text-main: #FFFFFF;
+    --text-muted: #888888;
+    --border-color: #393b3d;
+    --card-bg: #232527;
+    --link-color: #E2E2E2;
+}
+
+*, *::before, *::after, html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, a, span, div, label {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Comic Neue', cursive, sans-serif !important;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    text-decoration: none;
+    color: var(--link-color);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 970px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* 2017 Navbar */
+.navbar {
+    background-color: var(--primary-blue);
+    height: 40px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    max-width: 970px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.hamburger {
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.logo-img {
+    height: 34px;
+    width: auto;
+    margin-right: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    transition: filter 0.3s ease;
+}
+
+body.dark-theme .logo-img {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(1.2);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    height: 100%;
+}
+
+.nav-links li {
+    height: 100%;
+}
+
+.nav-links a {
+    color: white;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background-color: rgba(0,0,0,0.1);
+    text-decoration: none;
+}
+
+/* Search Bar */
+.nav-middle {
+    flex-grow: 1;
+    max-width: 400px;
+    margin: 0 20px;
+}
+
+.search-container {
+    display: flex;
+    background: white;
+    border-radius: 2px;
+    overflow: hidden;
+    height: 26px;
+}
+
+.search-container input {
+    border: none;
+    padding: 0 8px;
+    width: 100%;
+    font-size: 13px;
+    outline: none;
+}
+
+/* User Info Right */
+.nav-right {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 13px;
+    gap: 15px;
+}
+
+.theme-toggle {
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.nav-right a {
+    color: white;
+}
+
+.nav-right a:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+/* Main Content Push */
+main.container {
+    margin-top: 60px; /* Space for fixed navbar */
+}
+
+/* Games Layout */
+.games-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.games-main {
+    flex-grow: 1;
+}
+
+.sidebar-right {
+    width: 160px;
+    flex-shrink: 0;
+}
+
+.ad-placeholder {
+    width: 160px;
+    height: 600px;
+    background-color: #e3e3e3;
+    color: #999;
+    font-size: 10px;
+    text-align: center;
+    padding-top: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+/* Game Grid */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.game-card {
+    background: var(--card-bg);
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.game-thumbnail {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #ddd;
+    background-size: cover;
+    background-position: center;
+}
+
+.game-info {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.game-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.game-creator {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.game-stats {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: auto;
+}
+
+.thumbs-bar {
+    width: 60px;
+    height: 4px;
+    background-color: #e3e3e3;
+    border-radius: 2px;
+    margin-left: 8px;
+    overflow: hidden;
+}
+
+.thumbs-fill {
+    height: 100%;
+    background-color: #00B06F; /* 2017 green */
+    width: 80%; /* Example */
+}
+
+/* Authentication / Forms */
+.auth-container {
+    max-width: 400px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.auth-container h2 {
+    text-align: center;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #666;
+    font-size: 13px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.login-btn-large {
+    width: 100%;
+    padding: 10px;
+    background-color: #00B06F; /* 2017 Signup/Login green */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn-large:hover {
+    background-color: #009961;
+}
+
+.toggle-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--primary-blue);
+}
+
+.error-msg { color: #d9534f; font-size: 13px; margin-bottom: 10px; text-align: center; display: none; }
+.success-msg { color: #5cb85c; font-size: 13px; margin-bottom: 10px; text-align: center; display: none; }

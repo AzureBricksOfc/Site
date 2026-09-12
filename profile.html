@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Bricks - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="Imagens Do jogo/Site/Logo2.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="hamburger">☰</div>
+                <a href="index.html">
+                    <img src="Imagens Do jogo/Site/Logo.png" alt="Azure Bricks" class="logo-img">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="games.html">Games</a></li>
+                    <li><a href="#">Catalog</a></li>
+                    <li><a href="#">Develop</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                </ul>
+            </div>
+            <div class="nav-middle">
+                <div class="search-container">
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+            <div class="nav-right" id="user-info">
+                <a href="login.html">Login</a>
+                <a href="login.html?mode=signup">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="profile-page-container" style="max-width: 800px; margin: 0 auto;">
+            <div class="profile-header card" style="display: flex; gap: 30px; align-items: flex-start; padding: 30px;">
+                <div class="profile-avatar-large">
+                    <img id="profile-avatar" src="Imagens Do jogo/Site/Logo2.png" alt="Avatar" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 3px solid #3b82f6;">
+                </div>
+                <div class="profile-details" style="flex: 1;">
+                    <h1 id="profile-username" style="margin-top: 0; color: #3b82f6; font-size: 2.5rem;">User</h1>
+                    <p class="join-date" style="color: #6b7280; font-size: 0.9rem;">Joined: <span id="profile-joindate">Unknown</span></p>
+                    
+                    <div id="profile-bio-container" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                        <p id="profile-bio" style="margin: 0; white-space: pre-wrap;">This user hasn't written a bio yet.</p>
+                    </div>
+                    
+                    <div id="edit-profile-section" style="display: none; margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h3 style="margin-top: 0;">Edit Profile</h3>
+                        
+                        <label style="display: block; margin-top: 10px; font-weight: bold;">Avatar URL:</label>
+                        <input type="text" id="edit-avatar" class="styled-input" style="width: 100%; margin-bottom: 10px;" placeholder="e.g. Imagens Do jogo/Site/Logo2.png">
+                        
+                        <label style="display: block; font-weight: bold;">Bio:</label>
+                        <textarea id="edit-bio" class="styled-input" rows="4" style="width: 100%; resize: vertical; margin-bottom: 10px;" placeholder="Write something about yourself..."></textarea>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button id="save-profile-btn" class="btn-primary" onclick="saveProfileChanges()">Save Changes</button>
+                            <button id="cancel-edit-btn" class="btn-secondary" onclick="toggleEditMode(false)">Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <button id="edit-mode-btn" class="btn-secondary" style="display: none; margin-top: 15px;" onclick="toggleEditMode(true)">Edit Profile</button>
+                </div>
+            </div>
+            
+            <div class="profile-games card" style="margin-top: 20px; padding: 20px;">
+                <h2>Places</h2>
+                <div class="games-grid" id="profile-games-grid" style="display: flex; gap: 15px; margin-top: 15px;">
+                    <div class="game-card" style="width: 200px; padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 8px;">
+                        <div style="width: 100%; height: 100px; background: var(--bg-hover, #ddd); border-radius: 4px; margin-bottom: 10px;"></div>
+                        <h4 style="margin: 0;">Starter Place</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfilePage();
+        });
+    </script>
+</body>
+</html>

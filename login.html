@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - Azure Bricks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="Imagens%20Do%20jogo/Site/Logo2.png">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .auth-container h2 {
+            text-align: center;
+            color: var(--primary-blue);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .login-btn-large {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .login-btn-large:hover {
+            background-color: #004494;
+        }
+
+        .toggle-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--primary-blue);
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            color: #d9534f;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-msg {
+            color: #5cb85c;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="hamburger">☰</div>
+                <a href="index.html">
+                    <img src="Imagens%20Do%20jogo/Site/Logo.png" alt="Azure Bricks" class="logo-img">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="games.html">Games</a></li>
+                    <li><a href="#">Catalog</a></li>
+                    <li><a href="#">Develop</a></li>
+                    <li><a href="forum.html">Forum</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-middle">
+                <div class="search-container">
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+
+            <div class="nav-right" id="user-info">
+                <!-- Fallback if JS isn't loaded yet -->
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- LOGIN FORM -->
+        <div class="auth-container" id="login-form">
+            <h2>Login to Azure Bricks</h2>
+            <div class="error-msg" id="login-error">Invalid username or password.</div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="login-btn-large">Login</button>
+            </form>
+            <span class="toggle-link" onclick="toggleAuthMode('signup')">Don't have an account? Sign up here!</span>
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <div class="auth-container" id="signup-form" style="display: none;">
+            <h2>Create an Account</h2>
+            <div class="error-msg" id="signup-error">Username already exists.</div>
+            <div class="success-msg" id="signup-success">Account created! You can now login.</div>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signup-username">Choose Username</label>
+                    <input type="text" id="signup-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Choose Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="login-btn-large" style="background-color: #28a745;">Sign Up</button>
+            </form>
+            <span class="toggle-link" onclick="toggleAuthMode('login')">Already have an account? Login here.</span>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Azure Bricks Corporation. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+        // Check URL for mode (login or signup)
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            if(params.get('mode') === 'signup') {
+                toggleAuthMode('signup');
+            }
+        });
+    </script>
+</body>
+</html>

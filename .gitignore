@@ -1,0 +1,5 @@
+Studio/
+azure_studio.py
+host_public.py
+__pycache__/
+*.pyc

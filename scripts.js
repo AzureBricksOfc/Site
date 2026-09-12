@@ -88,7 +88,7 @@ function handleSignup(event) {
     db.users[username] = { 
         password: password,
         joinDate: new Date().toLocaleDateString(),
-        avatar: 'Imagens Do jogo/Site/Logo2.png',
+        avatar: 'assets/Site/Logo2.png',
         bio: "This user hasn't written a bio yet."
     };
     saveDb(db);
@@ -134,7 +134,7 @@ function checkAuth() {
 
     if (db.currentUser) {
         let userProfile = db.users[db.currentUser] || {};
-        let avatarUrl = userProfile.avatar || 'Imagens Do jogo/Site/Logo2.png';
+        let avatarUrl = userProfile.avatar || 'assets/Site/Logo2.png';
         if (userInfoDiv) {
             userInfoDiv.innerHTML = `
                 ${themeBtnHtml}
@@ -366,7 +366,7 @@ function loadProfilePage() {
     document.getElementById('profile-username').textContent = username;
     document.getElementById('profile-joindate').textContent = userProfile.joinDate || 'Unknown';
     document.getElementById('profile-bio').textContent = userProfile.bio || "This user hasn't written a bio yet.";
-    document.getElementById('profile-avatar').src = userProfile.avatar || 'Imagens Do jogo/Site/Logo2.png';
+    document.getElementById('profile-avatar').src = userProfile.avatar || 'assets/Site/Logo2.png';
 
     if (db.currentUser === username) {
         document.getElementById('edit-mode-btn').style.display = 'block';
@@ -394,7 +394,7 @@ function saveProfileChanges() {
     const newAvatar = document.getElementById('edit-avatar').value.trim();
     const newBio = document.getElementById('edit-bio').value.trim();
 
-    userProfile.avatar = newAvatar || 'Imagens Do jogo/Site/Logo2.png';
+    userProfile.avatar = newAvatar || 'assets/Site/Logo2.png';
     userProfile.bio = newBio || "This user hasn't written a bio yet.";
     
     saveDb(db);

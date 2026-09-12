@@ -75,25 +75,31 @@ async function handleSignup(event) {
     errorEl.style.display = 'none';
     successEl.style.display = 'none';
 
-    const userDoc = await firestore.collection('users').doc(username).get();
-    if (userDoc.exists) {
-        errorEl.textContent = 'Username already exists.';
-        errorEl.style.display = 'block';
-        return;
-    }
+    try {
+        const userDoc = await firestore.collection('users').doc(username).get();
+        if (userDoc.exists) {
+            errorEl.textContent = 'Username already exists.';
+            errorEl.style.display = 'block';
+            return;
+        }
 
-    await firestore.collection('users').doc(username).set({
-        password: password,
-        joinDate: new Date().toLocaleDateString(),
-        avatar: 'assets/Site/Logo2.png',
-        bio: "This user hasn't written a bio yet.",
-        friends: []
-    });
-    
-    successEl.style.display = 'block';
-    document.getElementById('signup-username').value = '';
-    document.getElementById('signup-password').value = '';
-    setTimeout(() => toggleAuthMode('login'), 1500);
+        await firestore.collection('users').doc(username).set({
+            password: password,
+            joinDate: new Date().toLocaleDateString(),
+            avatar: 'assets/Site/Logo2.png',
+            bio: "This user hasn't written a bio yet.",
+            friends: []
+        });
+        
+        successEl.style.display = 'block';
+        document.getElementById('signup-username').value = '';
+        document.getElementById('signup-password').value = '';
+        setTimeout(() => toggleAuthMode('login'), 1500);
+    } catch (error) {
+        console.error("Firebase Error: ", error);
+        errorEl.textContent = 'ERRO NO BANCO DE DADOS! Você esqueceu de ligar o Firestore no Console do Firebase (Leia as instruções vermelhas).';
+        errorEl.style.display = 'block';
+    }
 }
 
 async function handleLogin(event) {
@@ -104,12 +110,18 @@ async function handleLogin(event) {
     const errorEl = document.getElementById('login-error');
     errorEl.style.display = 'none';
 
-    const userDoc = await firestore.collection('users').doc(username).get();
-    if (userDoc.exists && userDoc.data().password === password) {
-        localStorage.setItem('ab_currentUser', username);
-        window.location.href = 'index.html';
-    } else {
-        errorEl.textContent = 'Invalid username or password.';
+    try {
+        const userDoc = await firestore.collection('users').doc(username).get();
+        if (userDoc.exists && userDoc.data().password === password) {
+            localStorage.setItem('ab_currentUser', username);
+            window.location.href = 'index.html';
+        } else {
+            errorEl.textContent = 'Invalid username or password.';
+            errorEl.style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Firebase Error: ", error);
+        errorEl.textContent = 'ERRO NO BANCO DE DADOS! Você esqueceu de ligar o Firestore no Console do Firebase (Leia as instruções vermelhas).';
         errorEl.style.display = 'block';
     }
 }
